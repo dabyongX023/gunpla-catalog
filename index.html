@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dave's Gunpla Catalog</title>
+<style>
+  :root {
+    --bg: #15171c;
+    --surface: #1d2027;
+    --surface-2: #252934;
+    --border: #323645;
+    --text: #e8e9ec;
+    --text-dim: #8e93a3;
+    --text-faint: #5b5f6e;
+    --accent: #e0822f;
+    --accent-dim: #e0822f33;
+    --green: #4caf7d;
+    --green-dim: #4caf7d22;
+    --blue: #5b8def;
+    --blue-dim: #5b8def22;
+    --purple: #9d7ce8;
+    --purple-dim: #9d7ce822;
+    --gold: #d4af37;
+    --gold-dim: #d4af3722;
+    --pink: #e87ca8;
+    --pink-dim: #e87ca822;
+    --radius: 10px;
+    --radius-lg: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(var(--bg) 0%, var(--bg) 100%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3Cpattern id='grid' width='40' height='40' patternUnits='userSpaceOnUse'%3E%3Cpath d='M0 0H40V40' fill='none' stroke='%23323645' stroke-width='0.6' opacity='0.35'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='120' height='120' fill='url(%23grid)'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800'%3E%3Cg stroke='%233a3e4d' stroke-width='1' fill='none' opacity='0.5'%3E%3Cpath d='M40 40 L40 90 L90 90'/%3E%3Cpath d='M40 40 L60 40 M40 40 L40 60'/%3E%3Ccircle cx='40' cy='40' r='2.5' fill='%233a3e4d'/%3E%3Cpath d='M760 40 L760 90 L710 90'/%3E%3Cpath d='M760 40 L740 40 M760 40 L760 60'/%3E%3Ccircle cx='760' cy='40' r='2.5' fill='%233a3e4d'/%3E%3Cpath d='M40 760 L40 710 L90 710'/%3E%3Cpath d='M40 760 L60 760 M40 760 L40 740'/%3E%3Ccircle cx='40' cy='760' r='2.5' fill='%233a3e4d'/%3E%3Cpath d='M760 760 L760 710 L710 710'/%3E%3Cpath d='M760 760 L740 760 M760 760 L760 740'/%3E%3Ccircle cx='760' cy='760' r='2.5' fill='%233a3e4d'/%3E%3Cpath d='M400 0 L420 30 L460 30 L480 60' opacity='0.6'/%3E%3Cpath d='M0 400 L30 380 L30 340 L60 320' opacity='0.6'/%3E%3Cpath d='M800 500 L770 480 L770 440' opacity='0.6'/%3E%3Ctext x='62' y='44' font-family='monospace' font-size='9' fill='%233a3e4d' opacity='0.8'%3E01%3C/text%3E%3Ctext x='692' y='44' font-family='monospace' font-size='9' fill='%233a3e4d' opacity='0.8'%3EMS%3C/text%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: no-repeat, repeat, no-repeat;
+    background-size: auto, 40px 40px, 800px 800px;
+    background-position: 0 0, 0 0, center;
+    background-attachment: fixed, fixed, fixed;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.5;
+    padding: 0;
+    min-height: 100vh;
+  }
+
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  header {
+    margin-bottom: 1.75rem;
+  }
+
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 0.875rem;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 1.25rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.6rem 0.9rem;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Stat cards */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin: 1.25rem 0;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.9rem 1rem;
+  }
+  .stat-label { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.25rem; }
+  .stat-value { font-size: 1.4rem; font-weight: 600; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+  .chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 999px;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .chip:hover { border-color: var(--text-faint); color: var(--text); }
+  .chip.active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .toolbar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  input[type="text"], select, textarea {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: var(--radius);
+    padding: 0.55rem 0.8rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+  }
+  input[type="text"]:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  input[type="text"] { flex: 1; }
+
+  button.btn {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: var(--radius);
+    padding: 0.55rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  button.btn:hover { background: var(--border); }
+  button.btn.primary { background: var(--accent); border-color: var(--accent); color: #1a1208; }
+  button.btn.primary:hover { background: #ec9241; }
+  button.btn.danger { color: #e8716a; border-color: #e8716a44; }
+
+  .count { font-size: 0.8rem; color: var(--text-faint); margin-bottom: 0.75rem; }
+
+  /* Kit rows for market catalog */
+  .kit-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.7rem 0.9rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+  }
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 6px;
+    font-weight: 600;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+  .b-EG { background: var(--surface-2); color: var(--text-dim); }
+  .b-HG { background: var(--blue-dim); color: var(--blue); }
+  .b-RG { background: var(--purple-dim); color: var(--purple); }
+  .b-MG { background: var(--gold-dim); color: var(--gold); }
+  .b-PG { background: var(--pink-dim); color: var(--pink); }
+  .img-link {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-faint);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: all 0.15s;
+  }
+  .img-link:hover { color: var(--accent); border-color: var(--accent); }
+  .thumb-box {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .thumb-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .thumb-box .thumb-fallback {
+    color: var(--text-faint);
+    font-size: 1.1rem;
+  }
+  .thumb-box .thumb-spin {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--border);
+    border-top-color: var(--text-faint);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .thumb-box {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: var(--text-faint);
+    font-size: 1.1rem;
+  }
+  .thumb-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .thumb-box.loading { animation: thumb-pulse 1.4s ease-in-out infinite; }
+  @keyframes thumb-pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 0.9; } }
+  .kit-name { font-weight: 500; font-size: 0.9rem; }
+  .kit-series { font-size: 0.78rem; color: var(--text-dim); margin-top: 0.1rem; }
+  .star { color: var(--gold); font-size: 0.8rem; }
+  .market-status-select {
+    font-size: 0.72rem;
+    padding: 0.3rem 0.5rem;
+    flex-shrink: 0;
+    max-width: 110px;
+  }
+  .market-status-select.is-added { border-color: var(--green); color: var(--green); }
+
+  /* Personal collection cards */
+  .col-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 0.9rem 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+  }
+  .col-card.built { border-color: #4caf7d55; }
+  .col-tags { display: flex; gap: 0.4rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
+  .status-built { background: var(--green-dim); color: var(--green); }
+  .status-queue { background: var(--blue-dim); color: var(--blue); }
+  .status-wishlist { background: var(--surface-2); color: var(--text-dim); }
+  .source-genuine { background: var(--green-dim); color: var(--green); }
+  .source-bootleg { background: #e87ca822; color: #e87ca8; }
+  .source-unsure { background: var(--surface-2); color: var(--text-faint); }
+  .source-unset { background: var(--surface-2); color: var(--text-faint); }
+  .col-price { font-size: 0.75rem; color: var(--text-faint); }
+  .col-notes { font-size: 0.78rem; color: var(--text-faint); margin-top: 0.3rem; }
+  .col-actions { display: flex; flex-direction: column; gap: 0.4rem; flex-shrink: 0; }
+  .col-actions select { font-size: 0.75rem; padding: 0.3rem 0.5rem; }
+  .icon-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-faint);
+    border-radius: var(--radius);
+    padding: 0.3rem 0.5rem;
+    cursor: pointer;
+    font-size: 0.75rem;
+  }
+  .icon-btn:hover { color: #e8716a; border-color: #e8716a55; }
+
+  .add-form {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.1rem;
+    margin-bottom: 1.25rem;
+    display: none;
+  }
+  .add-form.open { display: block; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.6rem; }
+  .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem; margin-bottom: 0.6rem; }
+  textarea { width: 100%; min-height: 60px; margin-bottom: 0.6rem; resize: vertical; }
+
+  .empty-state {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--text-faint);
+    font-size: 0.875rem;
+  }
+
+  .info-banner {
+    background: var(--blue-dim);
+    border: 1px solid #5b8def33;
+    border-radius: var(--radius);
+    padding: 0.7rem 0.9rem;
+    font-size: 0.8rem;
+    color: var(--blue);
+    margin-bottom: 1.25rem;
+  }
+
+  .admin-toggle-row { text-align: right; margin-top: 2rem; }
+  .admin-toggle {
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    opacity: 0.4;
+    cursor: pointer;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+  .admin-panel {
+    display: none;
+    margin-top: 0.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.1rem;
+  }
+  .admin-panel.open { display: block; }
+  pre.export-output {
+    display: none;
+    margin-top: 0.6rem;
+    font-size: 0.7rem;
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 0.6rem;
+    max-height: 200px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--text-dim);
+  }
+
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  @media (max-width: 540px) {
+    .form-grid, .form-grid-3 { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; }
+    .stat-value { font-size: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="header-row">
+      <div>
+        <h1>Gunpla catalog</h1>
+        <div class="subtitle">Your collection, build queue, and the market reference — all in one file.</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="collection">My collection</button>
+      <button class="tab-btn" data-tab="market">Market reference</button>
+    </div>
+  </header>
+
+  <!-- ===================== MY COLLECTION TAB ===================== -->
+  <div class="panel active" id="panel-collection">
+    <div class="stats">
+      <div class="stat-card"><div class="stat-label">Built</div><div class="stat-value" id="stat-built">0</div></div>
+      <div class="stat-card"><div class="stat-label">Build queue</div><div class="stat-value" id="stat-queued">0</div></div>
+      <div class="stat-card"><div class="stat-label">Wishlist</div><div class="stat-value" id="stat-wish">0</div></div>
+    </div>
+
+    <div class="btn-row" id="col-status-filters">
+      <button class="chip active" data-status="all">All</button>
+      <button class="chip" data-status="built">Built</button>
+      <button class="chip" data-status="queue">Build queue</button>
+      <button class="chip" data-status="wishlist">Wishlist</button>
+    </div>
+
+    <div class="toolbar">
+      <input type="text" id="col-search" placeholder="Search your kits...">
+      <button class="btn primary" id="col-add-btn">+ Add kit</button>
+    </div>
+
+    <div class="add-form" id="col-add-form">
+      <div class="form-grid">
+        <input type="text" id="cf-name" placeholder="Kit name e.g. HGAC Deathscythe Hell">
+        <input type="text" id="cf-series" placeholder="Series e.g. Gundam Wing">
+      </div>
+      <div class="form-grid-3">
+        <select id="cf-grade">
+          <option value="EG">EG</option>
+          <option value="HG">HG</option>
+          <option value="RG">RG</option>
+          <option value="MG">MG</option>
+          <option value="PG">PG</option>
+        </select>
+        <select id="cf-status">
+          <option value="wishlist">Wishlist</option>
+          <option value="queue">Build queue</option>
+          <option value="built">Built</option>
+        </select>
+        <input type="text" id="cf-price" placeholder="Est. price (PHP)">
+      </div>
+      <div class="form-grid" id="cf-source-row">
+        <select id="cf-source">
+          <option value="">Source / authenticity — unset</option>
+          <option value="genuine">Genuine Bandai</option>
+          <option value="bootleg">Bootleg</option>
+          <option value="unsure">Not sure yet</option>
+        </select>
+        <select id="cf-bootleg-brand" style="display:none;">
+          <option value="">Bootleg brand — unspecified</option>
+          <option value="Daban">Daban</option>
+          <option value="Changlong">Changlong</option>
+          <option value="TT Hongli">TT Hongli</option>
+          <option value="Gao Gao">Gao Gao</option>
+          <option value="MJH (formerly Dragon Momoko)">MJH (formerly Dragon Momoko)</option>
+          <option value="Hobby Star">Hobby Star</option>
+          <option value="WMH/JMS">WMH/JMS</option>
+          <option value="Jiuzhou">Jiuzhou</option>
+          <option value="Other / unmarked box">Other / unmarked box</option>
+        </select>
+      </div>
+      <textarea id="cf-notes" placeholder="Notes (color, joint fixes, etc.)"></textarea>
+      <div class="btn-row">
+        <button class="btn primary" id="cf-save">Save kit</button>
+        <button class="btn" id="cf-cancel">Cancel</button>
+      </div>
+    </div>
+
+    <div id="col-list"></div>
+    <div class="empty-state" id="col-empty" style="display:none;">No kits match. Add one or clear filters.</div>
+
+    <div class="admin-toggle-row">
+      <button class="admin-toggle" id="admin-toggle">⋯</button>
+    </div>
+    <div class="admin-panel" id="admin-panel">
+      <div style="font-size:0.75rem; color:var(--text-dim); margin-bottom:0.6rem;">Advanced</div>
+      <div class="btn-row">
+        <button class="btn" id="export-btn">Export JSON</button>
+        <button class="btn danger" id="reset-btn">Reset to defaults</button>
+      </div>
+      <pre class="export-output" id="export-output"></pre>
+    </div>
+  </div>
+
+  <!-- ===================== MARKET REFERENCE TAB ===================== -->
+  <div class="panel" id="panel-market">
+    <div class="info-banner">RG: complete official numbered list (#01–#43). HG and MG: curated notable picks per subline — those lines have hundreds more kits each.</div>
+
+    <div style="font-size:0.78rem; color:var(--text-dim); margin-bottom:0.4rem;">Grade</div>
+    <div class="btn-row" id="market-grade-filters">
+      <button class="chip active" data-grade="all">All grades</button>
+      <button class="chip" data-grade="EG">EG</button>
+      <button class="chip" data-grade="HG">HG</button>
+      <button class="chip" data-grade="RG">RG</button>
+      <button class="chip" data-grade="MG">MG</button>
+      <button class="chip" data-grade="PG">PG</button>
+    </div>
+
+    <div class="btn-row" id="market-subline-filters"></div>
+
+    <div class="toolbar">
+      <input type="text" id="market-search" placeholder="Search kit, series, or RG number...">
+    </div>
+
+    <div class="count" id="market-count"></div>
+    <div id="market-list" style="max-height:600px; overflow-y:auto;"></div>
+    <div class="empty-state" id="market-empty" style="display:none;">No kits match.</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const STORAGE_KEY = 'dave_gunpla_kits';
+  let kits = [];
+  let colStatusFilter = 'all';
+
+  const defaultKits = [
+    { id: '1', name: 'Daban bootleg RG Sazabi (dual cannon add-on)', series: 'Char Legacy / UC', grade: 'RG', status: 'built', price: '~2500 (bootleg + addon)', source: 'bootleg', bootlegBrand: 'Daban', notes: 'Built. Dual cannon weapon set arrived. Back weapon heavy — sagging joints fixed with DSPIAE joint pen + super glue on backpack mount.' },
+    { id: '2', name: 'Bootleg HG Strike Freedom', series: 'SEED Destiny', grade: 'HG', status: 'built', price: '~600', source: 'bootleg', bootlegBrand: '', notes: 'Built. Bootleg brand unconfirmed.' },
+    { id: '3', name: 'HG Gundam Barbatos', series: 'Iron-Blooded Orphans', grade: 'HG', status: 'built', price: '~900', source: 'genuine', bootlegBrand: '', notes: 'Built. Genuine. Loved the frame — picked as first MG target.' },
+    { id: '4', name: 'HG Gundam Aerial', series: 'Witch from Mercury', grade: 'HG', status: 'built', price: '~900', source: 'genuine', bootlegBrand: '', notes: 'Built. Genuine.' },
+    { id: '5', name: 'EG RX-78-2 Gundam', series: 'Mobile Suit Gundam (0079)', grade: 'EG', status: 'built', price: '~300', source: 'genuine', bootlegBrand: '', notes: 'Built. Genuine. Good panel-lining practice canvas.' },
+    { id: '6', name: 'HGAC Deathscythe Hell EW', series: 'Gundam Wing', grade: 'HG', status: 'queue', price: '900-1200', source: '', bootlegBrand: '', notes: 'Top pick next buy — new mold, buster shield, dual beam scythe.' },
+    { id: '7', name: 'HGAC Wing Gundam Zero EW', series: 'Gundam Wing', grade: 'HG', status: 'wishlist', price: '900-1200', source: '', bootlegBrand: '', notes: 'Pair with Deathscythe Hell for light/dark duo.' },
+    { id: '8', name: 'HGAC Heavyarms Custom EW', series: 'Gundam Wing', grade: 'HG', status: 'wishlist', price: '800-1500', source: '', bootlegBrand: '', notes: 'Dual gatling guns, no bootleg exists yet.' },
+    { id: '9', name: 'Genuine RG Sazabi #29', series: 'Char Legacy / UC', grade: 'RG', status: 'wishlist', price: '3190 (Neboys)', source: 'genuine', bootlegBrand: '', notes: 'Upgrade path from Daban bootleg, no rush.' },
+    { id: '10', name: 'RG Hi-Nu Gundam #36', series: 'Char Legacy / UC', grade: 'RG', status: 'wishlist', price: '2000-2500', source: '', bootlegBrand: '', notes: 'Sazabi vs Hi-Nu rival shelf.' },
+    { id: '11', name: 'MG Gundam Barbatos', series: 'Iron-Blooded Orphans', grade: 'MG', status: 'wishlist', price: '3000-3800', source: '', bootlegBrand: '', notes: 'First MG pick — same suit as owned HG, learn one new thing at a time.' },
+    { id: '12', name: 'RG Wing Gundam Zero #43', series: 'Gundam Wing', grade: 'RG', status: 'wishlist', price: '2200-2600', source: '', bootlegBrand: '', notes: '2025 release, Neo Bird mode transformation.' },
+    { id: '13', name: 'MG Wing Gundam Zero EW Ver.Ka', series: 'Gundam Wing', grade: 'MG', status: 'wishlist', price: '4500-5500', source: '', bootlegBrand: '', notes: 'Dream kit. Save for 3rd-4th MG, not beginner friendly.' },
+    { id: '14', name: 'RG Astray Red Frame', series: 'SEED Astray', grade: 'RG', status: 'wishlist', price: '2000-2500', source: '', bootlegBrand: '', notes: 'Black/red/white color match, Gerbera Straight katana.' }
+  ];
+
+  function loadKits() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      kits = raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(defaultKits));
+    } catch (e) {
+      kits = JSON.parse(JSON.stringify(defaultKits));
+    }
+  }
+  function saveKits() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(kits)); } catch (e) { console.error(e); }
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str || '';
+    return div.innerHTML;
+  }
+
+  // ===================== THUMBNAIL FETCHING =====================
+  // Pulls a representative image from Wikipedia's free pageimages API.
+  // Not every kit has a matching article, so missing ones fall back to a placeholder icon.
+  const thumbCache = {};
+  function cleanTitleForLookup(name) {
+    return name
+      .replace(/\bHGUC\b|\bHGAC\b|\bHGCE\b|\bHGFC\b|\bHGAW\b|\bHGCC\b|\bHGBF\b|\bHGIBO\b|\bHGBD\b|\bHG\b|\bRG\b|\bMG\b|\bPG\b|\bEG\b/gi, '')
+      .replace(/Ver\.\s?Ka|Ver\.\s?\d(\.\d)?/gi, '')
+      .replace(/\(.*?\)/g, '')
+      .replace(/#\d+/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+  async function fetchThumb(rawName) {
+    const title = cleanTitleForLookup(rawName);
+    if (thumbCache[title] !== undefined) return thumbCache[title];
+    try {
+      const url = 'https://en.wikipedia.org/w/api.php?action=query&prop=pageimages&format=json&pithumbsize=120&origin=*&titles=' + encodeURIComponent(title);
+      const res = await fetch(url);
+      const data = await res.json();
+      const pages = data.query && data.query.pages;
+      let thumbUrl = null;
+      if (pages) {
+        const page = Object.values(pages)[0];
+        if (page && page.thumbnail && page.thumbnail.source) thumbUrl = page.thumbnail.source;
+      }
+      thumbCache[title] = thumbUrl;
+      return thumbUrl;
+    } catch (e) {
+      thumbCache[title] = null;
+      return null;
+    }
+  }
+  function loadThumbInto(boxEl, rawName) {
+    fetchThumb(rawName).then(url => {
+      boxEl.classList.remove('loading');
+      if (url) {
+        boxEl.innerHTML = '<img src="' + url + '" alt="" loading="lazy">';
+      } else {
+        boxEl.innerHTML = '<i>📦</i>';
+      }
+    });
+  }
+
+  function renderCollection() {
+    const search = document.getElementById('col-search').value.toLowerCase();
+    let filtered = kits.filter(k => {
+      const matchesSearch = !search || k.name.toLowerCase().includes(search) || k.series.toLowerCase().includes(search);
+      const matchesFilter = colStatusFilter === 'all' || k.status === colStatusFilter;
+      return matchesSearch && matchesFilter;
+    });
+
+    document.getElementById('stat-built').textContent = kits.filter(k => k.status === 'built').length;
+    document.getElementById('stat-queued').textContent = kits.filter(k => k.status === 'queue').length;
+    document.getElementById('stat-wish').textContent = kits.filter(k => k.status === 'wishlist').length;
+
+    const list = document.getElementById('col-list');
+    const empty = document.getElementById('col-empty');
+    list.innerHTML = '';
+
+    if (filtered.length === 0) { empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+
+    const statusLabel = { built: 'Built', queue: 'Build queue', wishlist: 'Wishlist' };
+    const sourceLabel = { genuine: 'Genuine Bandai', bootleg: 'Bootleg', unsure: 'Not sure' };
+
+    filtered.forEach(k => {
+      const card = document.createElement('div');
+      card.className = 'col-card' + (k.status === 'built' ? ' built' : '');
+      const thumbId = 'thumb-' + Math.random().toString(36).slice(2, 9);
+      const sourceTagText = k.source === 'bootleg' && k.bootlegBrand ? 'Bootleg · ' + k.bootlegBrand : (sourceLabel[k.source] || '');
+      card.innerHTML =
+        '<div class="thumb-box loading" id="' + thumbId + '" style="margin-top:0.1rem;"></div>' +
+        '<div style="flex:1; min-width:0;">' +
+          '<div class="col-tags">' +
+            '<span class="badge b-' + k.grade + '">' + k.grade + '</span>' +
+            '<span class="badge status-' + k.status + '">' + statusLabel[k.status] + '</span>' +
+            (sourceTagText ? '<span class="badge source-' + (k.source||'unset') + '">' + escapeHtml(sourceTagText) + '</span>' : '') +
+            (k.price ? '<span class="col-price">₱' + escapeHtml(k.price) + '</span>' : '') +
+          '</div>' +
+          '<div class="kit-name">' + escapeHtml(k.name) + '</div>' +
+          '<div class="kit-series">' + escapeHtml(k.series) + '</div>' +
+          (k.notes ? '<div class="col-notes">' + escapeHtml(k.notes) + '</div>' : '') +
+        '</div>' +
+        '<div class="col-actions">' +
+          '<a class="img-link" href="https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(k.name + ' ' + k.grade + ' gunpla') + '" target="_blank" rel="noopener noreferrer" title="Search more images" style="align-self:flex-end;">🔍</a>' +
+          '<select data-id="' + k.id + '" class="status-select">' +
+            '<option value="wishlist"' + (k.status==='wishlist'?' selected':'') + '>Wishlist</option>' +
+            '<option value="queue"' + (k.status==='queue'?' selected':'') + '>Build queue</option>' +
+            '<option value="built"' + (k.status==='built'?' selected':'') + '>Built</option>' +
+          '</select>' +
+          '<select data-id="' + k.id + '" class="source-select">' +
+            '<option value=""' + (!k.source?' selected':'') + '>Source: unset</option>' +
+            '<option value="genuine"' + (k.source==='genuine'?' selected':'') + '>Genuine Bandai</option>' +
+            '<option value="bootleg"' + (k.source==='bootleg'?' selected':'') + '>Bootleg</option>' +
+            '<option value="unsure"' + (k.source==='unsure'?' selected':'') + '>Not sure</option>' +
+          '</select>' +
+          (k.source === 'bootleg' ?
+            '<select data-id="' + k.id + '" class="bootleg-brand-select">' +
+              ['', 'Daban', 'Changlong', 'TT Hongli', 'Gao Gao', 'MJH (formerly Dragon Momoko)', 'Hobby Star', 'WMH/JMS', 'Jiuzhou', 'Other / unmarked box']
+                .map(b => '<option value="' + b + '"' + (k.bootlegBrand===b?' selected':'') + '>' + (b || 'Brand: unspecified') + '</option>').join('') +
+            '</select>'
+          : '') +
+          '<button class="icon-btn del-btn" data-id="' + k.id + '">Delete</button>' +
+        '</div>';
+      list.appendChild(card);
+      loadThumbInto(document.getElementById(thumbId), k.name + ' ' + k.series);
+    });
+
+    document.querySelectorAll('.status-select').forEach(sel => {
+      sel.addEventListener('change', e => {
+        const kit = kits.find(k => k.id === e.target.getAttribute('data-id'));
+        if (kit) { kit.status = e.target.value; saveKits(); renderCollection(); }
+      });
+    });
+    document.querySelectorAll('.source-select').forEach(sel => {
+      sel.addEventListener('change', e => {
+        const kit = kits.find(k => k.id === e.target.getAttribute('data-id'));
+        if (kit) {
+          kit.source = e.target.value;
+          if (kit.source !== 'bootleg') kit.bootlegBrand = '';
+          saveKits(); renderCollection();
+        }
+      });
+    });
+    document.querySelectorAll('.bootleg-brand-select').forEach(sel => {
+      sel.addEventListener('change', e => {
+        const kit = kits.find(k => k.id === e.target.getAttribute('data-id'));
+        if (kit) { kit.bootlegBrand = e.target.value; saveKits(); renderCollection(); }
+      });
+    });
+    document.querySelectorAll('.del-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const id = e.target.getAttribute('data-id');
+        kits = kits.filter(k => k.id !== id);
+        saveKits(); renderCollection();
+      });
+    });
+  }
+
+  document.querySelectorAll('#col-status-filters .chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#col-status-filters .chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      colStatusFilter = btn.getAttribute('data-status');
+      renderCollection();
+    });
+  });
+  document.getElementById('col-search').addEventListener('input', renderCollection);
+
+  document.getElementById('col-add-btn').addEventListener('click', () => {
+    document.getElementById('col-add-form').classList.add('open');
+  });
+  document.getElementById('cf-cancel').addEventListener('click', () => {
+    document.getElementById('col-add-form').classList.remove('open');
+  });
+  document.getElementById('cf-source').addEventListener('change', e => {
+    document.getElementById('cf-bootleg-brand').style.display = e.target.value === 'bootleg' ? '' : 'none';
+    if (e.target.value !== 'bootleg') document.getElementById('cf-bootleg-brand').value = '';
+  });
+  document.getElementById('cf-save').addEventListener('click', () => {
+    const name = document.getElementById('cf-name').value.trim();
+    if (!name) return;
+    kits.push({
+      id: Date.now().toString(),
+      name: name,
+      series: document.getElementById('cf-series').value.trim() || 'Unspecified',
+      grade: document.getElementById('cf-grade').value,
+      status: document.getElementById('cf-status').value,
+      price: document.getElementById('cf-price').value.trim(),
+      source: document.getElementById('cf-source').value,
+      bootlegBrand: document.getElementById('cf-bootleg-brand').value,
+      notes: document.getElementById('cf-notes').value.trim()
+    });
+    saveKits();
+    document.getElementById('cf-name').value = '';
+    document.getElementById('cf-series').value = '';
+    document.getElementById('cf-price').value = '';
+    document.getElementById('cf-notes').value = '';
+    document.getElementById('cf-source').value = '';
+    document.getElementById('cf-bootleg-brand').value = '';
+    document.getElementById('cf-bootleg-brand').style.display = 'none';
+    document.getElementById('col-add-form').classList.remove('open');
+    renderCollection();
+  });
+
+  document.getElementById('admin-toggle').addEventListener('click', () => {
+    document.getElementById('admin-panel').classList.toggle('open');
+  });
+  document.getElementById('export-btn').addEventListener('click', () => {
+    const out = document.getElementById('export-output');
+    out.textContent = JSON.stringify(kits, null, 2);
+    out.style.display = 'block';
+  });
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    kits = JSON.parse(JSON.stringify(defaultKits));
+    saveKits();
+    document.getElementById('export-output').style.display = 'none';
+    renderCollection();
+  });
+
+  // ===================== MARKET REFERENCE =====================
+  let marketGrade = 'all';
+  let marketSubline = 'all';
+
+  const sublinesByGrade = {
+    HG: ['HGUC', 'HGAC', 'HGCE', 'HGFC', 'HGAW', 'HGCC', 'HGBF', 'HGIBO', 'HGBD', 'G-Witch'],
+    RG: [],
+    MG: ['Ver.Ka', 'Ver.2.0/3.0', 'Standard'],
+    EG: [],
+    PG: ['Unleashed', 'Standard']
+  };
+  const sublineFullNames = {
+    HGUC: 'High Grade Universal Century', HGAC: 'High Grade After Colony (Gundam Wing)',
+    HGCE: 'High Grade Cosmic Era (SEED)', HGFC: 'High Grade Future Century (G Gundam)',
+    HGAW: 'High Grade After War (Gundam X)', HGCC: 'High Grade Correct Century (Turn A)',
+    HGBF: 'High Grade Build Fighters', HGIBO: 'High Grade Iron-Blooded Orphans',
+    HGBD: 'High Grade Build Divers', 'G-Witch': 'HG Witch from Mercury'
+  };
+
+  const rgKits = [
+    ['RG-01','RX-78-2 Gundam','Mobile Suit Gundam'],['RG-02','MS-06S Zaku II (Char Custom)','Mobile Suit Gundam'],
+    ['RG-03','GAT-X105 Aile Strike Gundam','Gundam SEED'],['RG-04','MS-06F Zaku II','Mobile Suit Gundam'],
+    ['RG-05','ZGMF-X10A Freedom Gundam','Gundam SEED'],['RG-06','FX-550 Skygrasper Launcher/Sword Pack','Gundam SEED'],
+    ['RG-07','RX-178 Gundam Mk-II (Titans)','Zeta Gundam'],['RG-08','RX-178 Gundam Mk-II (A.E.U.G.)','Zeta Gundam'],
+    ['RG-09','ZGMF-X09A Justice Gundam','Gundam SEED'],['RG-10','MSZ-006 Zeta Gundam','Zeta Gundam'],
+    ['RG-11','ZGMF-X42S Destiny Gundam','Gundam SEED Destiny'],['RG-12','Gundam GP01 Zephyranthes','Gundam 0083'],
+    ['RG-13','Gundam GP01Fb Full Burnern','Gundam 0083'],['RG-14','ZGMF-X20A Strike Freedom Gundam','Gundam SEED Destiny'],
+    ['RG-15','GN-001 Gundam Exia','Gundam 00'],['RG-16','MSM-07S Z\'Gok (Char Custom)','Mobile Suit Gundam'],
+    ['RG-17','XXXG-00W0 Wing Gundam Zero EW','Gundam Wing Endless Waltz'],['RG-18','GN-0000+GNR-010 00 Raiser','Gundam 00'],
+    ['RG-19','MBF-P02 Gundam Astray Red Frame','SEED Astray'],['RG-20','XXXG-01W Wing Gundam EW','Gundam Wing Endless Waltz'],
+    ['RG-21','GNT-0000 00 Qan[T]','Gundam 00 Movie'],['RG-22','MSN-06S Sinanju','Gundam Unicorn'],
+    ['RG-23','Build Strike Gundam Full Package','Build Fighters'],['RG-24','Astray Gold Frame Amatsu Mina','SEED Astray'],
+    ['RG-25','RX-0 Unicorn Gundam','Gundam Unicorn'],['RG-26','Johnny Ridden\'s Zaku II','MSV'],
+    ['RG-27','Unicorn Gundam 02 Banshee Norn','Gundam Unicorn'],['RG-28','OZ-00MS Tallgeese EW','Gundam Wing Endless Waltz'],
+    ['RG-29','MSN-04 Sazabi','Char\'s Counterattack','star'],['RG-30','RX-0 Full Armor Unicorn Gundam','Gundam Unicorn'],
+    ['RG-31','XM-X1 Crossbone Gundam X1','Crossbone Gundam'],['RG-32','RX-93 ν Gundam','Char\'s Counterattack','star'],
+    ['RG-33','Force Impulse Gundam','SEED Destiny'],['RG-34','MSN-02 Zeong','Mobile Suit Gundam'],
+    ['RG-35','XXXG-01W Wing Gundam (TV)','Gundam Wing'],['RG-36','RX-93-ν2 Hi-ν Gundam','Char\'s Counterattack','star'],
+    ['RG-37','GF13-017NJII God Gundam','G Gundam'],['RG-38','OZ-13MS Gundam Epyon','Gundam Wing'],
+    ['RG-39','Force Impulse Gundam Spec II','SEED Freedom'],['RG-40','RX-78-2 Gundam Ver.2.0','Mobile Suit Gundam','star'],
+    ['RG-41','ORB-01 Akatsuki Gundam Oowashi','SEED Destiny'],['RG-42','GF13-017NJ Shining Gundam','G Gundam'],
+    ['RG-43','XXXG-00W0 Wing Gundam Zero (TV)','Gundam Wing']
+  ];
+  const hgKits = [
+    ['HGUC','RX-78-2 Gundam Revive','Mobile Suit Gundam','star'],['HGUC','MS-06F Zaku II Revive','Mobile Suit Gundam'],
+    ['HGUC','MS-07B Gouf','Mobile Suit Gundam'],['HGUC','MS-09 Dom','Mobile Suit Gundam'],
+    ['HGUC','RGC-80 Guncannon','Mobile Suit Gundam'],['HGUC','Gundam GP01','Gundam 0083'],
+    ['HGUC','MSZ-006 Zeta Gundam','Zeta Gundam'],['HGUC','MSN-04 Sazabi','Char\'s Counterattack'],
+    ['HGUC','RX-93 ν Gundam','Char\'s Counterattack'],['HGUC','RX-0 Unicorn Gundam','Gundam Unicorn','star'],
+    ['HGUC','MSN-06S Sinanju','Gundam Unicorn'],['HGUC','RGM-89 Jegan','Char\'s Counterattack'],
+    ['HGUC','MSN-04II Nightingale','Beltorchika\'s Children','star'],['HGUC','RX-93-ν2 Hi-ν Gundam','Beltorchika\'s Children'],
+    ['HGUC','NZ-666 Kshatriya','Gundam Unicorn','star'],
+    ['HGAC','XXXG-01W Wing Gundam EW','Gundam Wing','star'],['HGAC','Wing Gundam Zero EW','Gundam Wing','star'],
+    ['HGAC','Gundam Deathscythe Hell EW','Gundam Wing','star'],['HGAC','Gundam Heavyarms Custom EW','Gundam Wing'],
+    ['HGAC','Gundam Sandrock Custom EW','Gundam Wing'],['HGAC','Altron Gundam EW','Gundam Wing'],
+    ['HGAC','OZ-13MS Gundam Epyon','Gundam Wing'],['HGAC','OZ-00MS Tallgeese','Gundam Wing'],
+    ['HGCE','GAT-X105 Aile Strike Gundam','Gundam SEED'],['HGCE','ZGMF-X10A Freedom Gundam','Gundam SEED'],
+    ['HGCE','Strike Freedom Gundam','SEED Destiny','star'],['HGCE','ZGMF-X42S Destiny Gundam','SEED Destiny'],
+    ['HGCE','MBF-P02 Astray Red Frame','SEED Astray'],['HGFC','GF13-017NJII God Gundam','G Gundam','star'],
+    ['HGFC','GF13-017NJ Shining Gundam','G Gundam'],['HGFC','GF13-011NC Dragon Gundam','G Gundam'],
+    ['HGFC','GF13-001NHII Master Gundam','G Gundam'],['HGAW','GX-9900 Gundam X','After War Gundam X','star'],
+    ['HGAW','GX-9901-DX Gundam Double X','After War Gundam X'],['HGAW','GW-9800 Gundam Airmaster','After War Gundam X'],
+    ['HGCC','∀ Gundam (Turn A)','Turn A Gundam','star'],['HGCC','Turn X','Turn A Gundam'],
+    ['HGBF','Star Build Strike Gundam','Build Fighters','star'],['HGBF','Try Burning Gundam','Build Fighters Try'],
+    ['HGBF','Gundam Exia Dark Matter','Build Fighters'],['HGIBO','Gundam Barbatos','Iron-Blooded Orphans','star'],
+    ['HGIBO','Barbatos Lupus Rex','Iron-Blooded Orphans'],['HGIBO','Gundam Gusion Rebake','Iron-Blooded Orphans'],
+    ['HGBD','Build Divers Core Gundam','Build Divers'],['G-Witch','Gundam Aerial','Witch from Mercury','star'],
+    ['G-Witch','Gundam Calibarn','Witch from Mercury'],['G-Witch','Gundam Schwarzette','Witch from Mercury']
+  ];
+  const mgKits = [
+    ['Standard','RX-78-2 Gundam Ver.3.0','Mobile Suit Gundam','star'],['Standard','Gundam Barbatos','Iron-Blooded Orphans','star'],
+    ['Standard','MS-06S Zaku II Ver.2.0','Mobile Suit Gundam'],['Standard','Gundam Mk-II Ver.2.0','Zeta Gundam'],
+    ['Standard','MSN-02 Zeong Ver.Ka','Mobile Suit Gundam'],['Ver.Ka','MSN-04 Sazabi Ver.Ka','Char\'s Counterattack','star'],
+    ['Ver.Ka','RX-93 ν Gundam Ver.Ka','Char\'s Counterattack'],['Ver.Ka','Wing Gundam Zero EW Ver.Ka','Gundam Wing','star'],
+    ['Ver.Ka','Gundam Epyon EW Ver.Ka','Gundam Wing'],['Ver.Ka','Zeta Gundam Ver.Ka','Zeta Gundam'],
+    ['Ver.2.0/3.0','RX-0 Unicorn Gundam Ver.Ka','Gundam Unicorn'],['Ver.2.0/3.0','Strike Freedom Gundam','SEED Destiny','star'],
+    ['Ver.2.0/3.0','Freedom Gundam Ver.2.0','Gundam SEED'],['Ver.2.0/3.0','Strike Gundam Ver.RM','Gundam SEED'],
+    ['Standard','Gundam Deathscythe Hell EW','Gundam Wing'],['Standard','Gundam Heavyarms EW','Gundam Wing'],
+    ['Standard','Barbatos Lupus Rex','Iron-Blooded Orphans']
+  ];
+
+  function makeKitObj(grade, subline, name, series, tag) {
+    const marketId = 'mk_' + (grade + '_' + subline + '_' + name).replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    return { grade, subline, name, series, star: tag === 'star', marketId };
+  }
+  let allMarketKits = [];
+  rgKits.forEach(k => allMarketKits.push(makeKitObj('RG', k[0], k[1], k[2], k[3])));
+  hgKits.forEach(k => allMarketKits.push(makeKitObj('HG', k[0], k[1], k[2], k[3])));
+  mgKits.forEach(k => allMarketKits.push(makeKitObj('MG', k[0], k[1], k[2], k[3])));
+
+  function renderSublineRow() {
+    const row = document.getElementById('market-subline-filters');
+    row.innerHTML = '';
+    if (marketGrade === 'all') return;
+    const options = sublinesByGrade[marketGrade] || [];
+    if (options.length === 0) return;
+
+    const allBtn = document.createElement('button');
+    allBtn.className = 'chip' + (marketSubline === 'all' ? ' active' : '');
+    allBtn.textContent = 'All ' + marketGrade;
+    allBtn.addEventListener('click', () => { marketSubline = 'all'; renderSublineRow(); renderMarket(); });
+    row.appendChild(allBtn);
+
+    options.forEach(s => {
+      const btn = document.createElement('button');
+      btn.className = 'chip' + (marketSubline === s ? ' active' : '');
+      btn.textContent = s;
+      btn.title = sublineFullNames[s] || s;
+      btn.addEventListener('click', () => { marketSubline = s; renderSublineRow(); renderMarket(); });
+      row.appendChild(btn);
+    });
+  }
+
+  function renderMarket() {
+    const search = document.getElementById('market-search').value.toLowerCase();
+    let filtered = allMarketKits.filter(k => {
+      const matchesSearch = !search || k.name.toLowerCase().includes(search) || k.series.toLowerCase().includes(search) || k.subline.toLowerCase().includes(search);
+      const matchesGrade = marketGrade === 'all' || k.grade === marketGrade;
+      const matchesSubline = marketSubline === 'all' || k.subline === marketSubline;
+      return matchesSearch && matchesGrade && matchesSubline;
+    });
+
+    document.getElementById('market-count').textContent = filtered.length + ' kit' + (filtered.length === 1 ? '' : 's') + ' shown';
+
+    const list = document.getElementById('market-list');
+    const empty = document.getElementById('market-empty');
+    list.innerHTML = '';
+    if (filtered.length === 0) { empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+
+    filtered.forEach(k => {
+      const row = document.createElement('div');
+      row.className = 'kit-row';
+      const query = encodeURIComponent(k.name + ' ' + k.grade + ' gunpla');
+      const thumbId = 'thumb-' + Math.random().toString(36).slice(2, 9);
+      const existing = kits.find(kk => kk.marketId === k.marketId);
+      const currentStatus = existing ? existing.status : 'none';
+      row.innerHTML =
+        '<div class="thumb-box loading" id="' + thumbId + '"></div>' +
+        '<span class="badge b-' + k.grade + '">' + k.subline + '</span>' +
+        '<div style="flex:1; min-width:0;">' +
+          '<div class="kit-name">' + escapeHtml(k.name) + (k.star ? ' <span class="star">★</span>' : '') + '</div>' +
+          '<div class="kit-series">' + escapeHtml(k.series) + '</div>' +
+        '</div>' +
+        '<a class="img-link" href="https://www.google.com/search?tbm=isch&q=' + query + '" target="_blank" rel="noopener noreferrer" title="Search more images">🔍</a>' +
+        '<select class="market-status-select' + (currentStatus !== 'none' ? ' is-added' : '') + '" data-market-id="' + k.marketId + '">' +
+          '<option value="none"' + (currentStatus==='none'?' selected':'') + '>+ Add to mine</option>' +
+          '<option value="wishlist"' + (currentStatus==='wishlist'?' selected':'') + '>Wishlist</option>' +
+          '<option value="queue"' + (currentStatus==='queue'?' selected':'') + '>Build queue</option>' +
+          '<option value="built"' + (currentStatus==='built'?' selected':'') + '>Built</option>' +
+        '</select>';
+      list.appendChild(row);
+      loadThumbInto(document.getElementById(thumbId), k.name + ' ' + k.series);
+    });
+
+    document.querySelectorAll('.market-status-select').forEach(sel => {
+      sel.addEventListener('change', e => {
+        const marketId = e.target.getAttribute('data-market-id');
+        const marketKit = allMarketKits.find(k => k.marketId === marketId);
+        const newStatus = e.target.value;
+        const existing = kits.find(kk => kk.marketId === marketId);
+
+        if (newStatus === 'none') {
+          if (existing) kits = kits.filter(kk => kk.marketId !== marketId);
+        } else if (existing) {
+          existing.status = newStatus;
+        } else if (marketKit) {
+          kits.push({
+            id: Date.now().toString(),
+            marketId: marketId,
+            name: marketKit.name,
+            series: marketKit.series,
+            grade: marketKit.grade,
+            status: newStatus,
+            price: '',
+            notes: ''
+          });
+        }
+        saveKits();
+        renderMarket();
+      });
+    });
+  }
+
+  document.querySelectorAll('#market-grade-filters .chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#market-grade-filters .chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      marketGrade = btn.getAttribute('data-grade');
+      marketSubline = 'all';
+      renderSublineRow();
+      renderMarket();
+    });
+  });
+  document.getElementById('market-search').addEventListener('input', renderMarket);
+
+  // ===================== TABS =====================
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.getAttribute('data-tab')).classList.add('active');
+      if (btn.getAttribute('data-tab') === 'collection') renderCollection();
+    });
+  });
+
+  // ===================== INIT =====================
+  loadKits();
+  renderCollection();
+  renderMarket();
+})();
+</script>
+</body>
+</html>
